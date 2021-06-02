@@ -91,7 +91,9 @@ MAIN
 teams = getTeamDict(Team)
 
 for i, team in enumerate(teams):
-    print("{0:10}:    {1} \n".format(i, teams[i]))
+    uppercaseTeam = teams[i].name.replace('_', ' ').lower().title()
+
+    print("{0:10}:    {1} \n".format(i, uppercaseTeam))
 
 while True:
     try:
@@ -125,40 +127,44 @@ while True:
     finally:
         # For the Selected Team:
         box_scores = client.player_box_scores(day=day, month=month, year=year)
-        team = teams[team]
-        headers= '{}|Min|FG|3PT|FT|OR|Reb|Ast|TO|Stl|Blk|PF|Pts|Game Score'.format(team.name[0:3])
-        align  = ':--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--'
-        data  = ''
-        opponent = ''
+        if box_scores != []:
+            team = teams[team]
+            headers= '{}|Min|FG|3PT|FT|OR|Reb|Ast|TO|Stl|Blk|PF|Pts|Game Score'.format(team.name[0:3])
+            align  = ':--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--'
+            data  = ''
+            opponent = ''
 
-        # Get the Selected Team's totals
-        for box_score in box_scores:
-            if box_score['team'] == team:
-                # Add the 
-                data += boxScoreToReddit(box_score)
+            # Get the Selected Team's totals
+            for box_score in box_scores:
+                if box_score['team'] == team:
+                    # Add the
+                    data += boxScoreToReddit(box_score)
 
-        data += teamTotalsToReddit(day, month, year, team)
+            data += teamTotalsToReddit(day, month, year, team)
 
-        print(headers) 
-        print(align)
-        print(data)
+            print(headers)
+            print(align)
+            print(data)
 
-        # For the Opposing Team:
-        for box_score in box_scores:
-            if box_score['team'] == team:
-                opponent = box_score['opponent']
-                break
-        headers= '{}|Min|FG|3PT|FT|OR|Reb|Ast|TO|Stl|Blk|PF|Pts|Game Score'.format(opponent.name[0:3])
-        align  = ':--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--'
-        data  = ''
+            # For the Opposing Team:
+            for box_score in box_scores:
+                if box_score['team'] == team:
+                    opponent = box_score['opponent']
+                    break
+            headers= '{}|Min|FG|3PT|FT|OR|Reb|Ast|TO|Stl|Blk|PF|Pts|Game Score'.format(opponent.name[0:3])
+            align  = ':--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--'
+            data  = ''
 
-        for box_score in box_scores:
-            if box_score['team'] == opponent:
-                data += boxScoreToReddit(box_score)
+            for box_score in box_scores:
+                if box_score['team'] == opponent:
+                    data += boxScoreToReddit(box_score)
 
-        data += teamTotalsToReddit(day, month, year, opponent)
+            data += teamTotalsToReddit(day, month, year, opponent)
 
-        print(headers) 
-        print(align)
-        print(data)
+            print(headers)
+            print(align)
+            print(data)
+        else:
+            print('No game found for {} on {}-{}-{}'.format(teams[team].name, year, month, day))
+ 
 
